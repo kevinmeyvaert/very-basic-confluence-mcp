@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confluence MCP SSE Server</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #0052CC;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #0052CC;
+            margin-top: 30px;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .endpoint {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #0052CC;
+            border-radius: 3px;
+        }
+        .method {
+            font-weight: bold;
+            color: #0052CC;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .status.running {
+            background-color: #36B37E;
+            color: white;
+        }
+        .status.stopped {
+            background-color: #FF5630;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Confluence MCP SSE Server</h1>
+    
+    <div id="status">
+        <p>Server Status: <span class="status running">Running</span></p>
+        <p>Server started at: <span id="startTime"></span></p>
+        <p>Active connections: <span id="connections">0</span></p>
+    </div>
+
+    <h2>Available Endpoints</h2>
+    
+    <div class="endpoint">
+        <h3><span class="method">GET</span> /</h3>
+        <p>This page - Server information and status</p>
+    </div>
+    
+    <div class="endpoint">
+        <h3><span class="method">GET</span> /sse</h3>
+        <p>Establish an SSE connection with the server</p>
+        <p>Example client usage:</p>
+        <pre><code>const eventSource = new EventSource('/sse');
+eventSource.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log('Received:', data);
+};</code></pre>
+    </div>
+    
+    <div class="endpoint">
+        <h3><span class="method">POST</span> /message/{sessionId}</h3>
+        <p>Send a message to a specific session</p>
+        <p>Example usage:</p>
+        <pre><code>fetch('/message/session123', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    type: 'command',
+    payload: { /* command data */ }
+  })
+});</code></pre>
+    </div>
+    
+    <div class="endpoint">
+        <h3><span class="method">GET</span> /health</h3>
+        <p>Health check endpoint</p>
+        <p>Returns a 200 OK response if the server is running</p>
+    </div>
+
+    <h2>Documentation</h2>
+    <p>For more information, see the <a href="https://github.com/kevinmeyvaert/confluence-mcp">GitHub repository</a>.</p>
+
+    <script>
+        document.getElementById('startTime').textContent = new Date().toLocaleString();
+        
+        // Simulate connection count updates
+        setInterval(() => {
+            const connections = document.getElementById('connections');
+            const currentCount = parseInt(connections.textContent);
+            // Randomly add or remove connections for demo purposes
+            const change = Math.random() > 0.5 ? 1 : (currentCount > 0 ? -1 : 0);
+            connections.textContent = currentCount + change;
+        }, 5000);
+    </script>
+</body>
+</html> 
